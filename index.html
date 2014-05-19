@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+{% autoescape true %}
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>CaloriesProtein</title>
+<link rel="stylesheet" type="text/css" href="/stylesheets/main.css">
+
+<script>
+console.log({{ meow }});
+</script>
+
+</head>
+<body>
+
+<center>
+
+<table id="linesContainer">
+	<thead>
+		<tr>
+			<th class="calories">Calories</th>
+			<th class="protein">Protein</th>
+		</tr>
+	</thead>
+	{% for line in lines %}
+	  	<tr>
+	    	<td class="content calories">{{ line.calories }}</td>
+	    	<td class="content protein">{{ line.protein }}</td>
+	  	</tr>
+	{% endfor %}
+	<tr>
+		<td class="total calories">{{ lines|sum(attribute='calories') }}</td>
+		<td class="total protein">{{ lines|sum(attribute='protein') }}</td>
+	</tr>
+</table>
+
+<div id="inputContainer">
+<form action="/linepost" method="post">
+	<input autocomplete="off" id="caloriesInput" type="number"  min="0" max="20000" name="calories" placeholder="Calories"></input>
+	<input autocomplete="off" id="proteinInput" type="number"  min="0" max="20000" name="protein" placeholder="Protein"></input>
+	<input autocomplete="off" id="submitButton" type="submit" value="Submit"></input>
+</form>
+</div>
+
+</center>
+
+</body>
+</html>
+{% endautoescape %}
