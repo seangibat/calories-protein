@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+{% autoescape true %}
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>CaloriesProtein</title>
+<link rel="stylesheet" type="text/css" href="/stylesheets/main.css">
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+</head>
+<body>
+<script>
+
+thedate = new Date();
+day = thedate.getDate();
+month = thedate.getMonth()+1;
+year = thedate.getFullYear();
+
+window.location = "/date/" + year + "/" + month + "/" + day;
+
+
+</script>
+
+</body>
+</html>
+{% endautoescape %}
