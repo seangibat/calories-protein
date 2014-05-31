@@ -5,15 +5,15 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <title>CaloriesProtein</title>
 <link rel="stylesheet" type="text/css" href="/stylesheets/main.css">
-
-<script>
-console.log({{ meow }});
-</script>
-
+<link rel="stylesheet" type="text/css" href="/datepicker/css/datepicker.css">
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="/datepicker/js/bootstrap-datepicker.js"></script>
 </head>
 <body>
 
 <center>
+
+<div id="top"><input type="text" id="dateP"></input></div>
 
 <table id="linesContainer">
 	<thead>
@@ -34,15 +34,49 @@ console.log({{ meow }});
 	</tr>
 </table>
 
+<div id="middle"></div>
+
 <div id="inputContainer">
 <form action="/linepost" method="post">
 	<input autocomplete="off" id="caloriesInput" type="number"  min="0" max="20000" name="calories" placeholder="Calories"></input>
 	<input autocomplete="off" id="proteinInput" type="number"  min="0" max="20000" name="protein" placeholder="Protein"></input>
+	<input type="hidden" id="year" name="year"></input>
+	<input type="hidden" id="month" name="month"></input>
+	<input type="hidden"  id="day" name="day"></input>
+	<input type="hidden" id="hour" name="hour"></input>
+	<input type="hidden" id="minute" name="minute"></input>
+	<input type="hidden" id="second" name="second"></input>
 	<input autocomplete="off" id="submitButton" type="submit" value="Submit"></input>
 </form>
 </div>
 
 </center>
+
+<script>
+$(document).ready(function() {
+	var year = {{ year }};
+	var month = {{ month }};
+	var day = {{ day }};
+
+	$('#year').val(year);
+	$('#month').val(month);
+	$('#day').val(day);
+
+	today = new Date();
+
+	if (day == today.getDate() && month == (today.getMonth()+1) && year == today.getFullYear()) {
+		$('#hour').val(today.getHours());
+		$('#minute').val(today.getMinutes());
+		$('#second').val(today.getSeconds());
+	} else {
+		$('#hour').val('23');
+		$('#minute').val('59');
+		$('#second').val('59');
+	}
+
+	//$('#dateP').datepicker();
+});
+</script>
 
 </body>
 </html>

@@ -13,8 +13,6 @@ import urllib
 import jinja2
 import webapp2
 import datetime
-from pytz.gae import pytz
-from pytz import timezone
 from datetime import timedelta
 
 from google.appengine.api import users
@@ -30,26 +28,36 @@ def user_key(user_object):
 	return ndb.Key('User', user_object.user_id())
 
 def get_lines(user_object, date_object):
-	tomorrow = date_object - datetime.timedelta(days=1)
-	lines_query = Line.query(Line.user==user_object, Line.time>=date_object, Line.time<=tomorrow).order(Line.time)
-	lines_query = ndb.gql("SELECT * FROM Line WHERE user = :1 AND time <= :2 AND time >= :3", user_object, date_object, tomorrow)
+	tomorrow = date_object.replace(day=date_object.day+1)
+	lines_query = ndb.gql("SELECT * FROM Line WHERE user = :1 AND date >= :2 AND date <= :3", user_object, date_object, tomorrow).order(Line.date)
 	return lines_query.fetch()
 
 class Line(ndb.Model):
 	user = ndb.UserProperty()
 	calories = ndb.IntegerProperty(indexed=False)
 	protein = ndb.IntegerProperty(indexed=False)
-	time = ndb.DateTimeProperty(indexed=True)
+	date = ndb.DateTimeProperty(indexed=True)
 
 class HomePage(webapp2.RequestHandler):
 	def get(self):
+		template = JINJA_ENVIRONMENT.get_template('getdate.html')
+		self.response.write(template.render())
+		
+
+class DatePage(webapp2.RequestHandler):
+	def get(self, year, month, day):
+
+		today = datetime.datetime(int(year), int(month), int(day))
+
 		current_user = users.get_current_user()
-		lines = get_lines(current_user, datetime.datetime.today()+datetime.timedelta(hours=4))
+		lines = get_lines(current_user, today)
 
 		template_values = {
 			'lines': lines,
 			'user': current_user,
-			'meow': datetime.datetime.now().isoformat(),
+			'year': year,
+			'month': month,
+			'day': day,
 		}
 
 		template = JINJA_ENVIRONMENT.get_template('index.html')
@@ -57,17 +65,27 @@ class HomePage(webapp2.RequestHandler):
 
 class LinePost(webapp2.RequestHandler):
 	def post(self):
+		year = int(self.request.get('year'))
+		month = int(self.request.get('month'))
+		day = int(self.request.get('day'))
+		hour =int(self.request.get('hour'))
+		minute = int(self.request.get('minute'))
+		second = int(self.request.get('second'))
+		date = datetime.datetime(year, month, day, hour, minute, second)
+
 		calories = int(self.request.get('calories'))
 		protein = int(self.request.get('protein'))
 		author = users.get_current_user()
-		date = datetime.datetime.now()-datetime.timedelta(hours=4)
 
-		line = Line(parent=user_key(author), time=date, user=author, calories=calories, protein=protein)
+		line = Line(parent=user_key(author), date=date, user=author, calories=calories, protein=protein)
 		line.put()
 
-		self.redirect('/')
+		url = '/date/' + str(year) + '/' + str(month) + '/' + str(day)
+
+		self.redirect(url)
 
 app = webapp2.WSGIApplication([
 	('/', HomePage),
+	('/date/(\d+)/(\d+)/(\d+)', DatePage),
 	('/linepost', LinePost),
 ], debug=True)
