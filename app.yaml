@@ -15,8 +15,8 @@ handlers:
 - url: /img
   static_dir: img
 
-- url: /datepicker
-  static_dir: datepicker
+- url: /js
+  static_dir: js
 
 - url: .*
   script: main.app

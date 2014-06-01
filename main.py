@@ -28,7 +28,7 @@ def user_key(user_object):
 	return ndb.Key('User', user_object.user_id())
 
 def get_lines(user_object, date_object):
-	tomorrow = date_object.replace(day=date_object.day+1)
+	tomorrow = date_object + datetime.timedelta(hours=24)
 	lines_query = ndb.gql("SELECT * FROM Line WHERE user = :1 AND date >= :2 AND date <= :3", user_object, date_object, tomorrow).order(Line.date)
 	return lines_query.fetch()
 

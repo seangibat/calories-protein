@@ -5,15 +5,22 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <title>CaloriesProtein</title>
 <link rel="stylesheet" type="text/css" href="/stylesheets/main.css">
-<link rel="stylesheet" type="text/css" href="/datepicker/css/datepicker.css">
+<link rel="stylesheet" type="text/css" href="/stylesheets/pikaday.css">
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-<script src="/datepicker/js/bootstrap-datepicker.js"></script>
+<script src="/js/pikaday.js"></script>
+<script src="/js/moment.min.js"></script>
 </head>
 <body>
 
 <center>
 
-<div id="top"><input type="text" id="dateP"></input></div>
+<div id="top">
+	<div id="topleft">
+		<input type="text" id="dateP" />
+	</div>
+	<div id="topmiddle"></div>
+	<div od="topright"></div>
+</div>
 
 <table id="linesContainer">
 	<thead>
@@ -54,6 +61,7 @@
 
 <script>
 $(document).ready(function() {
+
 	var year = {{ year }};
 	var month = {{ month }};
 	var day = {{ day }};
@@ -64,6 +72,7 @@ $(document).ready(function() {
 
 	today = new Date();
 
+	// if the selected day is today, set the minutes and seconds to now. if not, set it to the last possible.
 	if (day == today.getDate() && month == (today.getMonth()+1) && year == today.getFullYear()) {
 		$('#hour').val(today.getHours());
 		$('#minute').val(today.getMinutes());
@@ -74,7 +83,18 @@ $(document).ready(function() {
 		$('#second').val('59');
 	}
 
-	//$('#dateP').datepicker();
+	var dayFromServer = new Date({{ year }}, {{ month }} - 1, {{ day }});
+
+	var picker = new Pikaday({ 
+		field: document.getElementById('dateP'), 
+		defaultDate: dayFromServer,
+		format: 'MM/DD/YYYY',
+		setDefaultDate: dayFromServer,
+		onSelect: function() {
+			window.location = "/date/" + moment(this.getDate()).format('YYYY/MM/DD');
+        }
+	});
+
 });
 </script>
 
